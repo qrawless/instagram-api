@@ -39,7 +39,7 @@
         }
     },
     "require": {
-        "php": ">=8.0",
+        "php": "^8.0",
         "lazyjsonmapper/lazyjsonmapper": "^1.6.1",
         "guzzlehttp/guzzle": "^6.2",
         "ext-curl": "*",
