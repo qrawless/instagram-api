@@ -1,5 +1,5 @@
 {
-    "name": "mgp25/instagram-api",
+    "name": "qrawless/instagram-api",
     "description": "Instagram's private API for PHP",
     "license": [
         "RPL-1.5",
@@ -39,7 +39,7 @@
         }
     },
     "require": {
-        "php": "*",
+        "php": ">=8.0",
         "lazyjsonmapper/lazyjsonmapper": "^1.6.1",
         "guzzlehttp/guzzle": "^6.2",
         "ext-curl": "*",
@@ -66,7 +66,7 @@
         "react/http": "^0.7.2",
         "friendsofphp/php-cs-fixer": "^2.11.0",
         "monolog/monolog": "^1.23",
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "^5.7 || ^6.2"
     },
     "scripts": {
         "codestyle": [
