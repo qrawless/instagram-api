@@ -6,7 +6,7 @@ class Endpoints
 {
     const BASE_URL = 'https://www.instagram.com';
     const LOGIN_URL = 'https://www.instagram.com/accounts/login/ajax/';
-    const ACCOUNT_PAGE = 'https://www.instagram.com/{username}/';
+    const ACCOUNT_PAGE = 'https://www.instagram.com/{username}/channel/';
     const MEDIA_LINK = 'https://www.instagram.com/p/{code}';
     const ACCOUNT_MEDIAS = 'https://www.instagram.com/graphql/query/?query_hash=e769aa130647d2354c40ea6a439bfc08&variables={variables}';
     const ACCOUNT_TAGGED_MEDIAS = 'https://www.instagram.com/graphql/query/?query_hash=be13233562af2d229b008d2976b998b5&variables={variables}';
@@ -112,7 +112,9 @@ class Endpoints
     public static function getMediasJsonByTagLink($tag, $maxId = '')
     {
         $url = str_replace('{tag}', urlencode($tag), static::MEDIA_JSON_BY_TAG);
-        return str_replace('{max_id}', urlencode($maxId), $url);
+        $url = str_replace('{max_id}', urlencode($maxId), $url);
+
+        return $url;
     }
 
     public static function getGeneralSearchJsonLink($query, $count = 10)

@@ -517,6 +517,7 @@ class Instagram
         return $this->getTaggedMediasByUserId($account->getId(), $count, $maxId);
     }
 
+
     /**
      * @param string $username
      *
@@ -1144,6 +1145,90 @@ class Instagram
      * @throws InstagramException
      * @throws InstagramNotFoundException
      */
+    public function getMediasByTagNew($tag, $count = 12, $maxId = '', $minTimestamp = null)
+    {
+        $index = 0;
+        $medias = [];
+        $mediaIds = [];
+        $hasNextPage = true;
+        while ($index < $count && $hasNextPage) {
+            $response = Request::get(Endpoints::getMediasJsonByTagLink($tag, $maxId),
+                $this->generateHeaders($this->userSession));
+            if ($response->code === static::HTTP_NOT_FOUND) {
+                throw new InstagramNotFoundException('This tag does not exists or it has been hidden by Instagram');
+            }
+            if ($response->code !== static::HTTP_OK) {
+                throw new InstagramException('Response code is ' . $response->code . '. Body: ' . static::getErrorBody($response->body) . ' Something went wrong. Please report issue.', $response->code);
+            }
+
+            $this->parseCookies($response->headers);
+
+            $arr = $this->decodeRawBodyToJson($response->raw_body);
+
+            if (!is_array($arr)) {
+                throw new InstagramException('Response decoding failed. Returned data corrupted or this library outdated. Please report issue');
+            }
+            if (empty($arr['data']['media_count'])) {
+                return [];
+            }
+//
+            $sections = $arr["data"]["recent"]["sections"];
+            foreach ($sections as $section) {
+                foreach ($section["layout_content"]["medias"] as $mediaArray) {
+
+                    if ($index === $count) {
+                        return $medias;
+                    }
+
+//                    print_r($mediaArray["media"]);
+//                    die();
+                    $media = Media::create($mediaArray["media"]);
+//                    print_r($media);
+//                    die();
+                    if (in_array($media->getId(), $mediaIds)) {
+                        return $medias;
+                    }
+                    if (isset($minTimestamp) && $media->getCreatedTime() < $minTimestamp) {
+                        return $medias;
+                    }
+                    $mediaIds[] = $media->getId();
+                    $medias[] = $media;
+                    $index++;
+
+                }
+            }
+            if (empty($nodes)) {
+                return $medias;
+            }
+//            foreach ($nodes as $mediaArray) {
+//
+//                print_r($mediaArray);
+//
+//            }
+
+//            foreach ($nodes as $mediaArray) {
+//                if ($index === $count) {
+//                    return $medias;
+//                }
+//                $media = Media::create($mediaArray['node']);
+//                if (in_array($media->getId(), $mediaIds)) {
+//                    return $medias;
+//                }
+//                if (isset($minTimestamp) && $media->getCreatedTime() < $minTimestamp) {
+//                    return $medias;
+//                }
+//                $mediaIds[] = $media->getId();
+//                $medias[] = $media;
+//                $index++;
+//            }
+//            if (empty($nodes)) {
+//                return $medias;
+//            }
+            $maxId = $arr['graphql']['hashtag']['edge_hashtag_to_media']['page_info']['end_cursor'];
+            $hasNextPage = $arr["data"]["recent"]["next_max_id"];
+        }
+        return $medias;
+    }
     public function getMediasByTag($tag, $count = 12, $maxId = '', $minTimestamp = null)
     {
         $index = 0;

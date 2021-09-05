@@ -587,12 +587,12 @@ class Media extends AbstractModel
                 $this->commentsDisabled = $value;
                 break;
             case 'comments':
-                $this->commentsCount = $arr[$prop]['count'];
+                $this->commentsCount = @$arr[$prop]['comment_count'];
                 break;
             case 'edge_liked_by':
             case 'edge_media_preview_like':
             case 'likes':
-                $this->likesCount = $arr[$prop]['count'];
+                $this->likesCount = @$arr[$prop]['like_count'];
                 break;
             case 'display_resources':
                 foreach ($value as $media) {
@@ -666,9 +666,9 @@ class Media extends AbstractModel
                 break;
             case 'location':
                 if (isset($arr[$prop])) {
-                    $this->locationId = $arr[$prop]['id'] ? $arr[$prop]['id'] : null;
+                    $this->locationId = $arr[$prop]["pk"] ? $arr[$prop]["pk"] : null;
                     $this->locationName = $arr[$prop]['name'] ? $arr[$prop]['name'] : null;
-                    $this->locationSlug = $arr[$prop]['slug'] ? $arr[$prop]['slug'] : null;
+                    $this->locationSlug = $arr[$prop]['city'] ? $arr[$prop]['city'] : null;
                     $this->locationAddressJson = isset($arr[$prop]['address_json']) ? $arr[$prop]['address_json'] : null;
                 }
                 break;
@@ -793,7 +793,7 @@ class Media extends AbstractModel
     private static function setCarouselMedia($mediaArray, $carouselArray, $instance)
     {
         $carouselMedia = new CarouselMedia();
-        $carouselMedia->setType($carouselArray['type']);
+        $carouselMedia->setType($carouselArray['media_type']);
 
         if (isset($carouselArray['images'])) {
             $carouselImages = self::getImageUrls($carouselArray['images']['standard_resolution']['url']);
